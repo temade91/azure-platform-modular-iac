@@ -1,0 +1,18 @@
+# Shared Base Settings
+location            = "eastus"
+resource_group_name = "<your-target-rg>"
+
+# AKS Settings
+cluster_name        = "aks-dev-cluster"
+node_vm_size        = "Standard_DS2_v2"
+
+# VM Settings
+vm_size             = "Standard_B1s"
+admin_password      = "SuperSecretPassword123!"
+admin_username      =  "your prefered admin_username"
+
+# Common Tags
+tags = {
+  Environment = "prod"
+  ManagedBy   = "Terraform"
+}

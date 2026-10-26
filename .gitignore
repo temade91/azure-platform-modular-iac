@@ -1,0 +1,38 @@
+# Local .terraform directories and plugins
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+*.tfstate.backup
+
+# Crash log files
+crash.log
+crash.*.log
+
+# Exclude sensitive tfvars files (keep .example files only)
+*.tfvars
+*.tfvars.json
+!*.tfvars.example
+
+# Exclude partial backend configs containing local account details
+backend-*.hcl
+!backend-*.hcl.example
+
+# Ignore CLI override and configuration files
+override.tf
+override.tf.json
+*_override.tf
+*_override.tf.json
+
+# Ignore generated execution plan files
+*.tfplan
+*.plan
+tfplan
+
+# OS and Editor junk files
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
