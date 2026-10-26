@@ -6,6 +6,7 @@ A modular, enterprise-ready Infrastructure as Code (IaC) repository provisioning
 
 ## Architecture Overview
 
+```text
 +---------------------------------------------------------------------------------+
 |                          Virtual Network (10.0.0.0/16)                          |
 |                                                                                 |
@@ -20,16 +21,18 @@ A modular, enterprise-ready Infrastructure as Code (IaC) repository provisioning
 |   |  - Subnet Association: snet-aks  |     |  - Subnet Association: snet-vm   | |
 |   +----------------------------------+     +----------------------------------+ |
 +---------------------------------------------------------------------------------+
+```
 
-* **Network Decoupling (`resources_module/vnet`)**: Creates an isolated Virtual Network (`10.0.0.0/16`) carved into two distinct `/24` subnets to segment container infrastructure from administrative virtual machines.
-* **AKS Cluster (`resources_module/aks`)**: Deploys an Azure Kubernetes Service cluster configured with Azure AD RBAC, with the system node pool pinned into `snet-aks`.
-* **Jumpbox VM (`resources_module/vm`)**: Deploys an administrative Ubuntu 22.04 LTS instance inside `snet-vm` equipped with a dedicated Network Interface (NIC) and static Public IP for bastion access and cluster troubleshooting.
-* **Remote State Partitioning**: Uses Azure Blob Storage with dynamic environment isolation keys (`dev/aks.tfstate` and `prod/aks.tfstate`).
+- **Network Decoupling (`resources_module/vnet`)**: Creates an isolated Virtual Network (`10.0.0.0/16`) carved into two distinct `/24` subnets to segment container infrastructure from administrative virtual machines.
+- **AKS Cluster (`resources_module/aks`)**: Deploys an Azure Kubernetes Service cluster configured with Azure AD RBAC, with the system node pool pinned into `snet-aks`.
+- **Jumpbox VM (`resources_module/vm`)**: Deploys an administrative Ubuntu 22.04 LTS instance inside `snet-vm` equipped with a dedicated Network Interface (NIC) and static Public IP for bastion access and cluster troubleshooting.
+- **Remote State Partitioning**: Uses Azure Blob Storage with dynamic environment isolation keys (`dev/aks.tfstate` and `prod/aks.tfstate`).
 
 ---
 
 ## Repository Structure
 
+```text
 .
 ├── .github/
 │   └── workflows/
@@ -57,6 +60,7 @@ A modular, enterprise-ready Infrastructure as Code (IaC) repository provisioning
 ├── prod.tfvars.example              # Sanitized input template for Production
 ├── .gitignore                       # Rules protecting state, secrets, plans, and cache
 └── README.md
+```
 
 ---
 
@@ -69,24 +73,24 @@ This project leverages partial backend configurations and environment-isolated `
 | **Dev** | `backend-dev.hcl` | `dev/aks.tfstate` | `dev.tfvars` | `rg-dev` | `Standard_B1s` |
 | **Prod** | `backend-prod.hcl` | `prod/aks.tfstate` | `prod.tfvars` | `rg-prod` | `Standard_D2s_v5` |
 
-* **Blast Radius Protection:** State keys are partitioned per environment. Applying changes or destroying development infrastructure cannot corrupt or lock the production state.
-* **Dynamic Pipeline Routing:** GitHub Actions maps the selected environment dropdown option to both the target state file and the corresponding variable definitions.
+- **Blast Radius Protection:** State keys are partitioned per environment. Applying changes or destroying development infrastructure cannot corrupt or lock the production state.
+- **Dynamic Pipeline Routing:** GitHub Actions maps the selected environment dropdown option to both the target state file and the corresponding variable definitions.
 
 ---
 
 ## Module Specifications
 
 ### `resources_module/vnet`
-* **Inputs:** `vnet_name`, `location`, `resource_group_name`, `tags`.
-* **Outputs:** `vnet_id`, `aks_subnet_id`, `vm_subnet_id`.
+- **Inputs:** `vnet_name`, `location`, `resource_group_name`, `tags`.
+- **Outputs:** `vnet_id`, `aks_subnet_id`, `vm_subnet_id`.
 
 ### `resources_module/aks`
-* **Inputs:** `cluster_name`, `dns_prefix`, `location`, `resource_group_name`, `node_vm_size`, `vnet_subnet_id`, `tags`.
-* **Outputs:** `aks_cluster_name`, `kube_config` (sensitive).
+- **Inputs:** `cluster_name`, `dns_prefix`, `location`, `resource_group_name`, `node_vm_size`, `vnet_subnet_id`, `tags`.
+- **Outputs:** `aks_cluster_name`, `kube_config` (sensitive).
 
 ### `resources_module/vm`
-* **Inputs:** `vm_name`, `location`, `resource_group_name`, `subnet_id`, `admin_username`, `vm_admin_password` (sensitive), `vm_size`, `tags`.
-* **Outputs:** `vm_public_ip`, `vm_private_ip`.
+- **Inputs:** `vm_name`, `location`, `resource_group_name`, `subnet_id`, `admin_username`, `vm_admin_password` (sensitive), `vm_size`, `tags`.
+- **Outputs:** `vm_public_ip`, `vm_private_ip`.
 
 ---
 
@@ -109,6 +113,9 @@ terraform validate
 
 # 5. Generate local dry-run execution plan
 terraform plan -var-file="dev.tfvars"
+```
+
+---
 
 ## CI/CD Pipeline Setup (GitHub Actions)
 
@@ -135,6 +142,7 @@ Configure the following under **Settings > Secrets and variables > Actions**:
 ### SSH into the Jumpbox
 ```bash
 ssh test-admin@<VM_PUBLIC_IP>
+```
 
 ### Configure kubectl for AKS
 
@@ -143,3 +151,7 @@ Fetch cluster credentials to your local kubeconfig and verify node health:
 ```bash
 az aks get-credentials --resource-group rg-dev --name aks-dev-cluster
 kubectl get nodes -o wide
+```
+
+---
+
